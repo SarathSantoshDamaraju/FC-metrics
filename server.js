@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 app.post('/post',async (req, res) => {
   var url=req.body.url;
   computeLogNormalScore(url);
-  let data = await lighthouseFromPuppeteer(url, options);
+  let data = await getMetrics(url);
   res.end(JSON.stringify(data));
 });
 
@@ -69,4 +69,15 @@ async function lighthouseFromPuppeteer(url, options, config = null) {
     total_blocking_time,
     time_to_interactive
   }
+}
+
+async function getMetrics(url) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto(url);
+
+  const metrics = await page.metrics();
+  await browser.close();
+  
+  return metrics;
 }

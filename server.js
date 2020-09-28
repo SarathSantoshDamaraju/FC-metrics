@@ -31,8 +31,8 @@ app.post('/post',async (req, res) => {
   res.end(JSON.stringify(data));
 });
 
-app.listen(3010,() => {
-  console.log("Started on PORT 3010");
+app.listen(3000,() => {
+  console.log("Started on PORT 3000");
 })
 
 

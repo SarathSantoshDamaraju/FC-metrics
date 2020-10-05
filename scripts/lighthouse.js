@@ -1,3 +1,4 @@
+const fs = require('fs');
 const lighthouse = require('lighthouse');
 const puppeteer = require('puppeteer');
 
@@ -28,13 +29,14 @@ async function lightHouse(url, options, config = null) {
   const total_blocking_time = audits['total-blocking-time'].displayValue;
   const time_to_interactive = audits['interactive'].displayValue;
 
-  await browser.close();
+  console.log(`\n
+     Lighthouse metrics: 
+     🎨 First Contentful Paint: ${first_contentful_paint}, 
+     ⌛️ Total Blocking Time: ${total_blocking_time},
+     👆 Time To Interactive: ${time_to_interactive}`);
 
-  return {
-    first_contentful_paint,
-    total_blocking_time,
-    time_to_interactive
-  }
+     return {'FCP': first_contentful_paint,
+    'TTI': time_to_interactive}
 }
 
-module.exports = {lightHouse};
+module.exports = {lightHouse}

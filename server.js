@@ -5,7 +5,7 @@ const { computeLogNormalScore } = require("lighthouse/lighthouse-core/audits/aud
 
 const options = {
   logLevel: 'info',
-  disableDeviceEmulation: true,
+  disableDeviceEmulation: false,
   chromeFlags: ['--disable-mobile-emulation']
 };
 

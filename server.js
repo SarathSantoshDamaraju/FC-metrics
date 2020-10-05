@@ -1,14 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
-const fs = require('fs');
-const lighthouse = require('lighthouse');
-const puppeteer = require('puppeteer');
-
-const chromeLauncher = require('chrome-launcher');
-const reportGenerator = require('lighthouse/lighthouse-core/report/report-generator');
-const request = require('request');
-const util = require('util');
 const { computeLogNormalScore } = require("lighthouse/lighthouse-core/audits/audit");
 
 const options = {
@@ -17,6 +9,9 @@ const options = {
   chromeFlags: ['--disable-mobile-emulation']
 };
 
+const {getMetrics} = require('./scripts/metrics');
+const {lightHouse} = require('./scripts/lighthouse');
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -24,65 +19,22 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-app.post('/post',async (req, res) => {
+app.post('/light-house',async (req, res) => {
   var url=req.body.url;
   computeLogNormalScore(url);
+  let data = await lightHouse(url, options);
+  res.end(JSON.stringify(data));
+});
+
+app.post('/metrics',async (req, res) => {
+  var url=req.body.url;
   let data = await getMetrics(url);
   res.end(JSON.stringify(data));
 });
+
 
 const port = process.env.PORT || 5000;
 
 app.listen(port,() => {
   console.log(`Started on PORT ${port}`);
-})
-
-
-// functions
-
-async function lighthouseFromPuppeteer(url, options, config = null) {
-  // Launch chrome using chrome-launcher
-  const chrome = await chromeLauncher.launch(options);
-  options.port = chrome.port;
-
-  // Connect chrome-launcher to puppeteer
-  const resp = await util.promisify(request)(`http://localhost:${options.port}/json/version`);
-  const { webSocketDebuggerUrl } = JSON.parse(resp.body);
-  const browser = await puppeteer.connect({ browserWSEndpoint: webSocketDebuggerUrl });
-
-  // Run Lighthouse
-  const { lhr } = await lighthouse(url, options, config);
-  await browser.disconnect();
-  await chrome.kill();
-
-  const json = reportGenerator.generateReport(lhr, 'json');
-
-  const audits = JSON.parse(json).audits; // Lighthouse audits
-  const first_contentful_paint = audits['first-contentful-paint'].displayValue;
-  const total_blocking_time = audits['total-blocking-time'].displayValue;
-  const time_to_interactive = audits['interactive'].displayValue;
-
-  await browser.close();
-
-  return {
-    first_contentful_paint,
-    total_blocking_time,
-    time_to_interactive
-  }
-}
-
-async function getMetrics(url) {
-  const browser = await puppeteer.launch({
-    'args' : [
-      '--no-sandbox',
-      '--disable-setuid-sandbox'
-    ]
-  });
-  const page = await browser.newPage();
-  await page.goto(url);
-
-  const metrics = await page.metrics();
-  await browser.close();
-  
-  return metrics;
-}
+});

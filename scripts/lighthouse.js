@@ -1,4 +1,3 @@
-const fs = require('fs');
 const lighthouse = require('lighthouse');
 const puppeteer = require('puppeteer');
 
@@ -7,13 +6,7 @@ const reportGenerator = require('lighthouse/lighthouse-core/report/report-genera
 const request = require('request');
 const util = require('util');
 
-const options = {
-  logLevel: 'info',
-  disableDeviceEmulation: true,
-  chromeFlags: ['--disable-mobile-emulation']
-};
-
-async function lighthouseFromPuppeteer(url, options, config = null) {
+async function lightHouse(url, options, config = null) {
   // Launch chrome using chrome-launcher
   const chrome = await chromeLauncher.launch(options);
   options.port = chrome.port;
@@ -35,11 +28,13 @@ async function lighthouseFromPuppeteer(url, options, config = null) {
   const total_blocking_time = audits['total-blocking-time'].displayValue;
   const time_to_interactive = audits['interactive'].displayValue;
 
-  console.log(`\n
-     Lighthouse metrics: 
-     🎨 First Contentful Paint: ${first_contentful_paint}, 
-     ⌛️ Total Blocking Time: ${total_blocking_time},
-     👆 Time To Interactive: ${time_to_interactive}`);
+  await browser.close();
+
+  return {
+    first_contentful_paint,
+    total_blocking_time,
+    time_to_interactive
+  }
 }
 
-export default lighthouseFromPuppeteer;
+module.exports = {lightHouse};

@@ -20,16 +20,26 @@ app.get('/', (req, res) => {
 })
 
 app.post('/light-house',async (req, res) => {
+  try {
   var url=req.body.url;
   computeLogNormalScore(url);
   let data = await lightHouse(url, options);
   res.end(JSON.stringify(data));
+  }
+  catch(err) {
+    res.send(JSON.stringify(err))
+  }
 });
 
 app.post('/metrics',async (req, res) => {
+  try {
   var url=req.body.url;
   let data = await getMetrics(url);
   res.end(JSON.stringify(data));
+}
+catch(err) {
+  res.send(JSON.stringify(err))
+}
 });
 
 

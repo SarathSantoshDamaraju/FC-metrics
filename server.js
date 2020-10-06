@@ -16,8 +16,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-  res.send('running')>
-})
+  res.send('running');
+});
 
 app.post('/light-house', async (req, res) => {
   try {

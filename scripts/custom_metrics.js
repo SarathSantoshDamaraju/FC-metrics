@@ -14,7 +14,7 @@ async function getLoadingTime({url, waitFor = '', searchFrame = false, frameName
     console.log(`searching frame with name ${frameName}`);
     frame = page.frames().find(frame => frame.name() === 'fc_widget')
     frameSelector = await frame.$eval(searchInFrame, (element) => element.className);
-  } else if(waitFor) {
+  } else if(waitFor) { // if there is no frame and provided waitFor, wait for it
     await page.waitForSelector(waitFor);
   }
 
@@ -24,6 +24,7 @@ async function getLoadingTime({url, waitFor = '', searchFrame = false, frameName
   endTime = Date.now();
   await browser.close();
   console.log(`calculated is ${(endTime - startTime) / 1000}`)
+  
   return (endTime - startTime) / 1000
 }
 

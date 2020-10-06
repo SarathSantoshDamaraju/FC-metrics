@@ -2,21 +2,19 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const { computeLogNormalScore } = require("lighthouse/lighthouse-core/audits/audit");
-
+const { lightHouse } = require('./scripts/lighthouse');
+const { getLoadingTime } = require('./scripts/custom_metrics');
+const getFCP = require('./scripts/fcp');
+const getLCP = require('./scripts/lcp');
 const options = {
   logLevel: 'info',
   disableDeviceEmulation: false,
   chromeFlags: ['--disable-mobile-emulation']
 };
 
-const { lightHouse } = require('./scripts/lighthouse');
-const { getLoadingTime } = require('./scripts/custom_metrics');
-const getFCP = require('./scripts/fcp');
-const getLCP = require('./scripts/lcp');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 app.get('/', (req, res) => {
   res.send('running');
 });
